@@ -9,6 +9,9 @@ document.getElementById("start-tournament").addEventListener("click", startTourn
 document.getElementById("pause-resume-btn").addEventListener("click", togglePauseResume);
 document.getElementById("end-tournament-btn").addEventListener("click", endTournamentEarly);
 
+// Mostrar la primera etapa predeterminada al cargar la página
+window.onload = () => addStage();
+
 function addStage() {
     const stageContainer = document.getElementById("stages-container");
     const stageIndex = stages.length + 1;
@@ -43,6 +46,7 @@ function startTournament() {
     if (stages.length > 0) {
         document.getElementById("setup-container").style.display = "none";
         document.getElementById("tournament-container").style.display = "block";
+        updateTournamentSummary();
         startStage();
     }
 }
@@ -57,6 +61,7 @@ function startStage() {
 
     let timeLeft = currentStage.duration * 60;
     displayTime(timeLeft);
+    updateTournamentSummary();
 
     interval = setInterval(() => {
         if (!isPaused) {
@@ -100,5 +105,19 @@ function resetTournament() {
     isPaused = false;
     stages = [];
     document.getElementById("stages-container").innerHTML = "";
+    addStage(); // Mostrar etapa inicial predeterminada
     document.getElementById("total-time").textContent = "Tiempo total: 0 minutos";
+}
+
+// Actualizar resumen del torneo en progreso
+function updateTournamentSummary() {
+    const summaryList = document.getElementById("summary-list");
+    summaryList.innerHTML = stages.map((stage, index) => {
+        const isCurrent = index === currentStageIndex;
+        return `
+            <li class="${isCurrent ? 'fw-bold' : ''}">
+                ${index + 1} - ${stage.littleBlind}/${stage.bigBlind} - ${stage.duration} min${isCurrent ? " -> Etapa actual" : ""}
+            </li>
+        `;
+    }).join('');
 }
