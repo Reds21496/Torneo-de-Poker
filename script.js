@@ -2,9 +2,12 @@ let stages = [];
 let currentStageIndex = 0;
 let interval;
 let totalTime = 0;
+let isPaused = false;
 
 document.getElementById("add-stage").addEventListener("click", addStage);
 document.getElementById("start-tournament").addEventListener("click", startTournament);
+document.getElementById("pause-resume-btn").addEventListener("click", togglePauseResume);
+document.getElementById("end-tournament-btn").addEventListener("click", endTournamentEarly);
 
 function addStage() {
     const stageContainer = document.getElementById("stages-container");
@@ -25,7 +28,7 @@ function addStage() {
 
 function startTournament() {
     const inputs = document.querySelectorAll("#stages-container .stage-input");
-    stages = Array.from(inputs).map((stageDiv, index) => {
+    stages = Array.from(inputs).map((stageDiv) => {
         const [lbInput, bbInput, durationInput] = stageDiv.querySelectorAll("input");
         return {
             littleBlind: parseInt(lbInput.value),
@@ -56,8 +59,10 @@ function startStage() {
     displayTime(timeLeft);
 
     interval = setInterval(() => {
-        timeLeft -= 1;
-        displayTime(timeLeft);
+        if (!isPaused) {
+            timeLeft -= 1;
+            displayTime(timeLeft);
+        }
 
         if (timeLeft <= 0) {
             clearInterval(interval);
@@ -73,6 +78,27 @@ function displayTime(seconds) {
     document.getElementById("timer").textContent = `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 }
 
+function togglePauseResume() {
+    isPaused = !isPaused;
+    document.getElementById("pause-resume-btn").textContent = isPaused ? "Reanudar" : "Pausar";
+}
+
+function endTournamentEarly() {
+    clearInterval(interval);
+    document.getElementById("tournament-container").style.display = "none";
+    document.getElementById("setup-container").style.display = "block";
+    resetTournament();
+}
+
 function endTournament() {
+    clearInterval(interval);
     document.getElementById("timer").textContent = "Torneo Finalizado";
+}
+
+function resetTournament() {
+    currentStageIndex = 0;
+    isPaused = false;
+    stages = [];
+    document.getElementById("stages-container").innerHTML = "";
+    document.getElementById("total-time").textContent = "Tiempo total: 0 minutos";
 }
