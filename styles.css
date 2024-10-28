@@ -1,0 +1,18 @@
+body {
+    background-color: #f8f9fa;
+}
+
+#setup-container, #tournament-container {
+    max-width: 80%;
+}
+
+.stage-input {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+#timer {
+    font-size: 5rem;
+    font-weight: bold;
+}
